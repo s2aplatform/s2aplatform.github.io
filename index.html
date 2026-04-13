@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>S2A Platform</title>
+    <title>S2A Platform - Fixed</title>
     <style>
         :root {
             --primary: #ff6d00;
@@ -14,7 +14,6 @@
             --danger: #ff4444;
         }
 
-        /* CHANGED: Removed height: 100vh and overflow: hidden to allow page scrolling */
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0;
@@ -27,9 +26,13 @@
 
         /* --- AUTH SCREEN --- */
         #auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--dark); z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark); 
+            z-index: 10000; /* Extremely high to ensure clickability */
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
         }
         .auth-card {
             background: var(--card); padding: 40px; border-radius: 16px;
@@ -50,12 +53,11 @@
 
         /* --- CHAT AREA --- */
         #main-platform {
-            flex: 1; display: flex; flex-direction: column; max-width: 900px;
-            margin: 0 auto; width: 100%; background: #181818; visibility: hidden;
+            flex: 1; display: none; flex-direction: column; max-width: 900px;
+            margin: 0 auto; width: 100%; background: #181818;
             border-left: 1px solid #222; border-right: 1px solid #222;
         }
 
-        /* CHANGED: Set a fixed height for the chat box so it scrolls internally */
         #chat-messages {
             height: 500px; 
             overflow-y: auto; 
@@ -66,7 +68,6 @@
             background: #141414;
         }
 
-        /* Message Styling */
         .message {
             background: #252525; padding: 12px 15px; border-radius: 12px;
             max-width: 80%; width: fit-content; word-wrap: break-word; position: relative;
@@ -74,13 +75,11 @@
         .message.mine { align-self: flex-end; background: #333; border-bottom-right-radius: 2px; }
         .message b { color: var(--primary); font-size: 0.75rem; display: block; margin-bottom: 4px; }
         
-        /* Delete Button */
         .delete-btn {
             position: absolute; top: 5px; right: 8px;
             cursor: pointer; font-size: 14px; opacity: 0.4;
         }
         .message:hover .delete-btn { opacity: 1; }
-        .delete-btn:hover { color: var(--danger); }
 
         /* --- BIG MESSAGE STYLE --- */
         .message.big-style {
@@ -98,57 +97,46 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-redeem { background: var(--gold); color: black; font-size: 0.75rem; margin-top: 10px; width: 100%; }
         .btn-redeem:disabled { background: #444; color: #777; cursor: not-allowed; }
-
-        /* Extra content to demonstrate scrollability */
-        .footer-info { padding: 40px; text-align: center; color: #444; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div class="auth-card">
-            <h1 style="color: var(--primary);">S2A Platform 會員系統🔒</h1>
-            <button onclick="handleGoogleLogin()" class="auth-input" style="cursor:pointer; background:white; color:black; font-weight:bold;">Google Login</button>
+            <h1 style="color: var(--primary);">S2A Platform</h1>
+            <button id="google-login-btn" class="auth-input" style="cursor:pointer; background:white; color:black; font-weight:bold;">Google Login</button>
             <div style="margin: 10px 0; color:#444;">OR</div>
             <input type="email" id="email" class="auth-input" placeholder="Email">
             <input type="password" id="password" class="auth-input" placeholder="Password">
-            <button onclick="handleEmailAuth()" class="btn btn-primary" style="width: 100%;">Enter Platform</button>
+            <button id="email-login-btn" class="btn btn-primary" style="width: 100%;">Enter Platform</button>
             <p id="error-msg" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="main-platform">
         <nav>
-            <div style="font-weight: bold; color: var(--primary);">S2A PLATFORM-🌏全球即時串人聊天室💬</div>
-            <p>Global real-time chat room</p>
+            <div style="font-weight: bold; color: var(--primary);">S2A PLATFORM</div>
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div class="coin-box">💰 <span id="coin-count">0</span></div>
-                <button onclick="logout()" class="btn" style="background:#222; color:#888; padding: 5px 10px; font-size:0.75rem;">Logout</button>
+                <button id="logout-btn" class="btn" style="background:#222; color:#888; padding: 5px 10px; font-size:0.75rem;">Logout</button>
             </div>
         </nav>
 
-        <div id="chat-messages">
-            </div>
+        <div id="chat-messages"></div>
 
         <div class="input-area">
             <div class="input-row">
                 <input type="text" id="chat-input" placeholder="Type message... (+10💰)">
-                <button onclick="sendMessage(false)" class="btn btn-primary">Send</button>
+                <button id="send-btn" class="btn btn-primary">Send</button>
             </div>
-            <button id="redeem-btn" onclick="sendMessage(true)" class="btn btn-redeem" disabled>REDEEM BIG MSG (100💰)</button>
-        </div>
-
-        <div class="footer-info">
-            S2A Platform © 2026 | Global real-time chat room.
+            <button id="redeem-btn" onclick="window.sendMessage(true)" class="btn btn-redeem" disabled>REDEEM BIG MSG (100💰)</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, push, onChildAdded, onChildRemoved, onValue, runTransaction, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.app/firebasedatabase.js";
-        // Note: Using standard modular imports
-        import { getDatabase as getDb, ref as dbRef } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, onChildRemoved, onValue, runTransaction, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAVPhbTlWBa0xBw0wo2wMU7XwynwqwVzGM",
@@ -162,28 +150,35 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getDb(app);
+        const db = getDatabase(app);
         const googleProvider = new GoogleAuthProvider();
 
         let currentCoins = 0;
 
-        // --- AUTH ---
-        window.handleGoogleLogin = () => signInWithPopup(auth, googleProvider);
+        // Attach functions to window for button access
+        window.handleGoogleLogin = () => signInWithPopup(auth, googleProvider).catch(e => alert(e.message));
         window.handleEmailAuth = async () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
+            if(!email || !pass) return alert("Please fill fields");
             try { await signInWithEmailAndPassword(auth, email, pass); }
-            catch { await createUserWithEmailAndPassword(auth, email, pass).catch(e => alert("Error: " + e.message)); }
+            catch { await createUserWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message)); }
         };
         window.logout = () => signOut(auth);
 
-        // --- COINS ---
+        // Event listeners for buttons
+        document.getElementById('google-login-btn').onclick = window.handleGoogleLogin;
+        document.getElementById('email-login-btn').onclick = window.handleEmailAuth;
+        document.getElementById('logout-btn').onclick = window.logout;
+        document.getElementById('send-btn').onclick = () => window.sendMessage(false);
+
+        // Coin Logic
         function addCoins(amount) {
-            const coinRef = dbRef(db, `users/${auth.currentUser.uid}/coins`);
+            const coinRef = ref(db, `users/${auth.currentUser.uid}/coins`);
             runTransaction(coinRef, (val) => (val || 0) + amount);
         }
 
-        // --- MESSAGES ---
+        // Messaging Logic
         window.sendMessage = async (isBig) => {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
@@ -194,7 +189,7 @@
                 addCoins(-100);
             } else { addCoins(10); }
 
-            push(dbRef(db, 'chat_messages'), {
+            push(ref(db, 'chat_messages'), {
                 uid: auth.currentUser.uid,
                 name: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
                 text: text,
@@ -204,53 +199,52 @@
             input.value = "";
         };
 
-        // --- DELETE ---
         window.deleteMsg = (id) => {
-            if(confirm("Delete this message?")) {
-                remove(dbRef(db, `chat_messages/${id}`));
-            }
+            if(confirm("Delete this message?")) remove(ref(db, `chat_messages/${id}`));
         };
 
-        // --- OBSERVERS ---
+        // Observers
         onAuthStateChanged(auth, (user) => {
-            document.getElementById('auth-overlay').style.display = user ? 'none' : 'flex';
-            document.getElementById('main-platform').style.visibility = user ? 'visible' : 'hidden';
+            const overlay = document.getElementById('auth-overlay');
+            const platform = document.getElementById('main-platform');
             if(user) {
-                onValue(dbRef(db, `users/${user.uid}/coins`), (snap) => {
+                overlay.style.display = 'none';
+                platform.style.display = 'flex';
+                onValue(ref(db, `users/${user.uid}/coins`), (snap) => {
                     currentCoins = snap.val() || 0;
                     document.getElementById('coin-count').innerText = currentCoins;
                     document.getElementById('redeem-btn').disabled = (currentCoins < 100);
                 });
+            } else {
+                overlay.style.display = 'flex';
+                platform.style.display = 'none';
             }
         });
 
-        onChildAdded(dbRef(db, 'chat_messages'), (snap) => {
+        onChildAdded(ref(db, 'chat_messages'), (snap) => {
             const data = snap.val();
             const id = snap.key;
             const container = document.getElementById('chat-messages');
             const div = document.createElement('div');
-            
             div.id = `msg-${id}`;
             const isMine = data.uid === auth.currentUser?.uid;
             div.className = `message ${isMine ? 'mine' : ''} ${data.isBig ? 'big-style' : ''}`;
-            
             div.innerHTML = `
-                ${isMine ? `<span class="delete-btn" onclick="deleteMsg('${id}')">🗑️</span>` : ''}
+                ${isMine ? `<span class="delete-btn" onclick="window.deleteMsg('${id}')">🗑️</span>` : ''}
                 <b>${data.name}</b>
                 <span>${data.text}</span>
             `;
-            
             container.appendChild(div);
-            container.scrollTop = container.scrollHeight; // Auto-scroll chat box
+            container.scrollTop = container.scrollHeight;
         });
 
-        onChildRemoved(dbRef(db, 'chat_messages'), (snap) => {
+        onChildRemoved(ref(db, 'chat_messages'), (snap) => {
             const el = document.getElementById(`msg-${snap.key}`);
             if(el) el.remove();
         });
 
         document.getElementById('chat-input').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') sendMessage(false);
+            if(e.key === 'Enter') window.sendMessage(false);
         });
     </script>
 </body>
