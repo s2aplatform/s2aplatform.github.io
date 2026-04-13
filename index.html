@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>S2A Platform - Home</title>
+    <title>S2A Platform - Pro</title>
     <style>
         :root {
             --primary: #ff6d00;
@@ -11,197 +11,125 @@
             --card: #1e1e1e;
             --gold: #ffd700;
             --text: #e0e0e0;
+            --danger: #ff4444;
         }
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            margin: 0;
-            background-color: var(--dark);
-            color: var(--text);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            margin: 0; background-color: var(--dark); color: var(--text);
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
 
         /* --- AUTH SCREEN --- */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--dark);
-            z-index: 9999;
+            background: var(--dark); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
         }
-
         .auth-card {
-            background: var(--card);
-            padding: 40px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            background: var(--card); padding: 40px; border-radius: 16px;
+            width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
-
         .auth-input {
             width: 100%; padding: 12px; margin-bottom: 12px;
-            border-radius: 8px; border: 1px solid #333;
-            background: #252525; color: white; box-sizing: border-box;
+            border-radius: 8px; border: 1px solid #333; background: #252525; color: white; box-sizing: border-box;
         }
 
         /* --- NAVIGATION --- */
         nav {
-            background: #0a0a0a;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #222;
+            background: #0a0a0a; padding: 15px 25px; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #222;
         }
+        .coin-box { color: var(--gold); font-weight: bold; background: #222; padding: 6px 15px; border-radius: 20px; font-size: 0.9rem; }
 
-        .coin-box {
-            color: var(--gold);
-            font-weight: bold;
-            background: #222;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            border: 1px solid #333;
-        }
-
-        /* --- CHAT AREA --- */
+        /* --- CHAT AREA (SCROLLABLE) --- */
         #main-platform {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            max-width: 900px;
-            margin: 0 auto;
-            width: 100%;
-            background: #181818;
-            visibility: hidden; /* Only visible after login */
+            flex: 1; display: flex; flex-direction: column; max-width: 900px;
+            margin: 0 auto; width: 100%; background: #181818; visibility: hidden;
         }
 
         #chat-messages {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: auto; /* Enable Scrolling */
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            scroll-behavior: smooth;
         }
 
+        /* Message Styling */
         .message {
-            background: #252525;
-            padding: 10px 15px;
-            border-radius: 12px;
-            max-width: 75%;
-            width: fit-content;
-            word-wrap: break-word;
+            background: #252525; padding: 10px 15px; border-radius: 12px;
+            max-width: 75%; width: fit-content; word-wrap: break-word; position: relative;
         }
-
         .message.mine { align-self: flex-end; background: #333; border-bottom-right-radius: 2px; }
         .message b { color: var(--primary); font-size: 0.75rem; display: block; margin-bottom: 4px; }
-        .message img { max-width: 100%; border-radius: 8px; margin-top: 8px; cursor: pointer; }
+        
+        /* Delete Button */
+        .delete-btn {
+            position: absolute; top: 5px; right: 8px;
+            cursor: pointer; font-size: 12px; color: #666; display: none;
+        }
+        .message.mine:hover .delete-btn { display: block; }
+        .delete-btn:hover { color: var(--danger); }
 
         /* --- BIG MESSAGE STYLE --- */
         .message.big-style {
-            border: 2px solid var(--gold);
-            background: linear-gradient(135deg, #2a2a2a, #111);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-            max-width: 90%;
+            border: 2px solid var(--gold); background: linear-gradient(135deg, #2a2a2a, #111);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); max-width: 90%;
         }
-        .message.big-style span {
-            font-size: 2.8rem;
-            font-weight: 800;
-            line-height: 1.1;
-            display: block;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
+        .message.big-style span { font-size: 2.8rem; font-weight: 800; line-height: 1.1; display: block; }
 
         /* --- INPUT --- */
-        .input-area {
-            background: #0a0a0a;
-            padding: 20px;
-            border-top: 1px solid #222;
-        }
-
+        .input-area { background: #0a0a0a; padding: 20px; border-top: 1px solid #222; }
         .input-row { display: flex; gap: 10px; }
+        #chat-input { flex: 1; background: #1e1e1e; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; outline: none; }
         
-        #chat-input {
-            flex: 1; background: #1e1e1e; border: 1px solid #333;
-            color: white; padding: 12px; border-radius: 8px; outline: none;
-        }
-
-        .btn {
-            padding: 10px 20px; border-radius: 8px; border: none;
-            cursor: pointer; font-weight: bold; transition: 0.2s;
-        }
-
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-google { background: white; color: black; width: 100%; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-redeem { 
-            background: var(--gold); color: black; font-size: 0.75rem; 
-            margin-top: 10px; width: 100%; 
-        }
+        .btn-redeem { background: var(--gold); color: black; font-size: 0.75rem; margin-top: 10px; width: 100%; }
         .btn-redeem:disabled { background: #444; color: #777; cursor: not-allowed; }
-
-        .divider { margin: 20px 0; color: #444; font-size: 0.8rem; display: flex; align-items: center; }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #222; margin: 0 10px; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div class="auth-card">
-            <h1 style="color: var(--primary); margin: 0 0 10px 0;">S2A Platform</h1>
-            <p style="color: #666; margin-bottom: 25px;">Welcome! Please login to continue.</p>
-            
-            <button onclick="handleGoogleLogin()" class="btn btn-google">
-                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="18"> 
-                Google Sign In
-            </button>
-
-            <div class="divider">OR</div>
-
+            <h1 style="color: var(--primary);">S2A Platform</h1>
+            <button onclick="handleGoogleLogin()" class="auth-input" style="cursor:pointer; background:white; color:black; font-weight:bold;">Google Login</button>
+            <div style="margin: 10px 0; color:#444;">OR</div>
             <input type="email" id="email" class="auth-input" placeholder="Email">
             <input type="password" id="password" class="auth-input" placeholder="Password">
-            
-            <button onclick="handleEmailAuth()" class="btn btn-primary" style="width: 100%;">Sign In / Register</button>
-            <p id="error-msg" style="color: #ff4444; font-size: 0.8rem; margin-top: 15px;"></p>
+            <button onclick="handleEmailAuth()" class="btn btn-primary" style="width: 100%;">Enter Platform</button>
+            <p id="error-msg" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="main-platform">
         <nav>
-            <div style="font-weight: bold; color: var(--primary); letter-spacing: 1px;">S2A PLATFORM</div>
+            <div style="font-weight: bold; color: var(--primary);">S2A PLATFORM</div>
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div class="coin-box">💰 <span id="coin-count">0</span></div>
                 <button onclick="logout()" class="btn" style="background:#222; color:#888; padding: 5px 10px; font-size:0.75rem;">Logout</button>
             </div>
         </nav>
 
-        <div id="chat-messages">
-            </div>
+        <div id="chat-messages"></div>
 
         <div class="input-area">
-            <div id="upload-status" style="display:none; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px;">Uploading Image...</div>
             <div class="input-row">
-                <input type="text" id="chat-input" placeholder="Type a message... (+10💰)">
-                <input type="file" id="img-file" accept="image/*" style="display:none;" onchange="uploadImage()">
-                <button onclick="document.getElementById('img-file').click()" class="btn" style="background:#222; color:white;">📷</button>
+                <input type="text" id="chat-input" placeholder="Type message... (+10💰)">
                 <button onclick="sendMessage(false)" class="btn btn-primary">Send</button>
             </div>
-            <button id="redeem-btn" onclick="sendMessage(true)" class="btn btn-redeem" disabled>
-                REDEEM BIG MESSAGE (Costs 100 💰)
-            </button>
+            <button id="redeem-btn" onclick="sendMessage(true)" class="btn btn-redeem" disabled>REDEEM BIG MSG (100💰)</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, push, onChildAdded, onValue, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getDatabase, ref, push, onChildAdded, onChildRemoved, onValue, runTransaction, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAVPhbTlWBa0xBw0wo2wMU7XwynwqwVzGM",
@@ -216,35 +144,27 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const storage = getStorage(app);
         const googleProvider = new GoogleAuthProvider();
 
         let currentCoins = 0;
 
-        // --- AUTH LOGIC ---
-        window.handleGoogleLogin = () => signInWithPopup(auth, googleProvider).catch(e => alert(e.message));
-        
+        // --- AUTH ---
+        window.handleGoogleLogin = () => signInWithPopup(auth, googleProvider);
         window.handleEmailAuth = async () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            if(!email || !pass) return;
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-            } catch (e) {
-                try { await createUserWithEmailAndPassword(auth, email, pass); }
-                catch (err) { document.getElementById('error-msg').innerText = "Auth Error: " + err.message; }
-            }
+            try { await signInWithEmailAndPassword(auth, email, pass); }
+            catch { await createUserWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message)); }
         };
-
         window.logout = () => signOut(auth);
 
-        // --- COIN LOGIC ---
+        // --- COINS ---
         function addCoins(amount) {
             const coinRef = ref(db, `users/${auth.currentUser.uid}/coins`);
             runTransaction(coinRef, (val) => (val || 0) + amount);
         }
 
-        // --- CHAT LOGIC ---
+        // --- MESSAGES ---
         window.sendMessage = async (isBig) => {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
@@ -253,9 +173,7 @@
             if(isBig) {
                 if(currentCoins < 100) return alert("Not enough coins!");
                 addCoins(-100);
-            } else {
-                addCoins(10);
-            }
+            } else { addCoins(10); }
 
             push(ref(db, 'chat_messages'), {
                 uid: auth.currentUser.uid,
@@ -267,66 +185,53 @@
             input.value = "";
         };
 
-        window.uploadImage = async () => {
-            const file = document.getElementById('img-file').files[0];
-            if(!file || !auth.currentUser) return;
-            document.getElementById('upload-status').style.display = 'block';
-
-            try {
-                const fileName = `${Date.now()}_${file.name.replace(/[.$#[\]/]/g, "_")}`;
-                const storageRef = sRef(storage, `chat_images/${fileName}`);
-                await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(storageRef);
-
-                addCoins(10); // Reward for image
-                push(ref(db, 'chat_messages'), {
-                    uid: auth.currentUser.uid,
-                    name: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
-                    image: url,
-                    time: serverTimestamp()
-                });
-            } catch (e) { alert("Upload failed"); }
-            document.getElementById('upload-status').style.display = 'none';
+        // --- DELETE FUNCTION ---
+        window.deleteMessage = (msgId) => {
+            if(confirm("Delete this message?")) {
+                remove(ref(db, `chat_messages/${msgId}`));
+            }
         };
 
-        // --- EVENT LISTENERS ---
+        // --- LISTENERS ---
         onAuthStateChanged(auth, (user) => {
-            const overlay = document.getElementById('auth-overlay');
-            const platform = document.getElementById('main-platform');
-            if (user) {
-                overlay.style.display = 'none';
-                platform.style.visibility = 'visible';
-                
-                // Track User Coins
+            document.getElementById('auth-overlay').style.display = user ? 'none' : 'flex';
+            document.getElementById('main-platform').style.visibility = user ? 'visible' : 'hidden';
+            if(user) {
                 onValue(ref(db, `users/${user.uid}/coins`), (snap) => {
                     currentCoins = snap.val() || 0;
                     document.getElementById('coin-count').innerText = currentCoins;
                     document.getElementById('redeem-btn').disabled = (currentCoins < 100);
                 });
-            } else {
-                overlay.style.display = 'flex';
-                platform.style.visibility = 'hidden';
             }
         });
 
+        // Add Message to UI
         onChildAdded(ref(db, 'chat_messages'), (snap) => {
             const data = snap.val();
+            const id = snap.key;
             const container = document.getElementById('chat-messages');
-            const div = document.createElement('div');
             
+            const div = document.createElement('div');
+            div.id = `msg-${id}`; // Assign ID for deletion
             const isMine = data.uid === auth.currentUser?.uid;
             div.className = `message ${isMine ? 'mine' : ''} ${data.isBig ? 'big-style' : ''}`;
             
-            let content = `<b>${data.name} ${data.isBig ? '👑 BIG MSG' : ''}</b>`;
-            if (data.text) content += `<span>${data.text}</span>`;
-            if (data.image) content += `<img src="${data.image}" onclick="window.open('${data.image}')">`;
+            div.innerHTML = `
+                ${isMine ? `<span class="delete-btn" onclick="deleteMessage('${id}')">🗑️</span>` : ''}
+                <b>${data.name}</b>
+                <span>${data.text}</span>
+            `;
             
-            div.innerHTML = content;
             container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
+            container.scrollTop = container.scrollHeight; // Auto-scroll to bottom
         });
 
-        // Submit on Enter
+        // Remove Message from UI when deleted in DB
+        onChildRemoved(ref(db, 'chat_messages'), (snap) => {
+            const el = document.getElementById(`msg-${snap.key}`);
+            if(el) el.remove();
+        });
+
         document.getElementById('chat-input').addEventListener('keypress', (e) => {
             if(e.key === 'Enter') sendMessage(false);
         });
