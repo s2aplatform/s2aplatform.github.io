@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>S2A Platform - Video Call Edition</title>
+    <title>S2A Platform - Pro Elite</title>
     <script src='https://8x8.vc/vpaas-magic-cookie-36a469735d454659a5848600885e3532/external_api.js'></script>
     <style>
         :root {
@@ -22,61 +22,64 @@
             height: 100vh; display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- AUTH SCREEN --- */
+        /* --- OVERLAYS --- */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--dark); z-index: 10000; display: flex; justify-content: center; align-items: center;
         }
+        #video-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 9999; display: none; flex-direction: column;
+        }
+        #jitsi-container { flex: 1; width: 100%; }
+
         .auth-card { background: var(--card); padding: 40px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center; }
         .auth-input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #333; background: #252525; color: white; box-sizing: border-box; }
 
-        /* --- VIDEO CONTAINER --- */
-        #video-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 9999; display: none;
-            flex-direction: column;
-        }
-        #jitsi-container { flex: 1; width: 100%; }
-        .close-call { background: var(--danger); color: white; border: none; padding: 15px; cursor: pointer; font-weight: bold; }
-
-        /* --- MAIN APP --- */
+        /* --- MAIN PLATFORM --- */
         #main-platform {
             display: none; flex-direction: column; width: 95%; max-width: 1000px; height: 85vh;
             background: #181818; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid #333; overflow: hidden;
         }
 
         nav { background: #0a0a0a; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-        .nav-actions { display: flex; align-items: center; gap: 15px; }
         .coin-box { color: var(--gold); font-weight: bold; background: #222; padding: 6px 15px; border-radius: 20px; font-size: 0.9rem; }
 
+        /* --- MESSAGES --- */
         #chat-messages { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 15px; background: #141414; }
-
         .message { background: #252525; padding: 14px 18px; border-radius: 12px; max-width: 70%; width: fit-content; word-wrap: break-word; position: relative; }
         .message.mine { align-self: flex-end; background: #333; border-bottom-right-radius: 2px; }
         .message b { color: var(--primary); font-size: 0.8rem; display: block; margin-bottom: 4px; }
-        .delete-btn { position: absolute; top: 5px; right: 8px; cursor: pointer; font-size: 14px; opacity: 0.4; }
+        .delete-btn { position: absolute; top: 5px; right: 8px; cursor: pointer; font-size: 14px; opacity: 0.3; }
+        .message:hover .delete-btn { opacity: 1; }
 
+        /* Big Message Style */
+        .message.big-style { border: 3px solid var(--gold); background: linear-gradient(135deg, #2a2a2a, #111); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); max-width: 90%; }
+        .message.big-style span { font-size: 2.8rem; font-weight: 800; line-height: 1.1; display: block; padding: 10px 0; }
+
+        /* --- INPUTS --- */
         .input-area { background: #0a0a0a; padding: 25px; border-top: 1px solid #222; }
-        .input-row { display: flex; gap: 15px; }
+        .input-row { display: flex; gap: 12px; }
         #chat-input { flex: 1; background: #1e1e1e; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; outline: none; }
         
-        .btn { padding: 12px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-call { background: var(--success); color: white; display: flex; align-items: center; gap: 8px; }
+        .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-call { background: var(--success); color: white; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:disabled { background: #444; cursor: not-allowed; }
+        .btn-redeem { background: var(--gold); color: black; font-size: 0.8rem; margin-top: 10px; width: 100%; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         #cooldown-text { color: var(--danger); font-size: 0.75rem; margin-top: 5px; display: none; }
     </style>
 </head>
 <body>
 
     <div id="video-overlay">
-        <button class="close-call" onclick="endCall()">❌ CLOSE VIDEO CALL</button>
+        <button class="btn" style="background:var(--danger); color:white; border-radius:0;" onclick="endCall()">❌ EXIT VIDEO CALL</button>
         <div id="jitsi-container"></div>
     </div>
 
     <div id="auth-overlay">
         <div class="auth-card">
-            <h1 style="color: var(--primary);">S2A Platform 會員系統🔒</h1>
+          <h1 style="color: var(--primary);">S2A Platform 會員系統🔒</h1>
             <button id="google-login-btn" class="auth-input" style="cursor:pointer; background:white; color:black; font-weight:bold;">Google Login</button>
             <div style="margin: 10px 0; color:#444;">OR</div>
             <input type="email" id="email" class="auth-input" placeholder="Email">
@@ -91,10 +94,10 @@
             <div style="font-weight: bold; color: var(--primary);">S2A PLATFORM-🌏全球即時串人聊天室💬</div>
             <p>Global real-time chat room</p>
             </div>
-            <div class="nav-actions">
-                <button class="btn btn-call" onclick="startCall()">📞 VIDEO CALL</button>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="btn btn-call" style="padding: 8px 15px;" onclick="startCall()">📞 CALL</button>
                 <div class="coin-box">💰 <span id="coin-count">0</span></div>
-                <button id="logout-btn" class="btn" style="background:#222; color:#888; padding: 5px 12px; font-size:0.75rem;">Logout</button>
+                <button id="logout-btn" class="btn" style="background:#222; color:#888; padding: 5px 10px; font-size:0.7rem;">Logout</button>
             </div>
         </nav>
 
@@ -106,6 +109,7 @@
                 <button id="send-btn" class="btn btn-primary">Send</button>
             </div>
             <div id="cooldown-text">Wait <span id="seconds">3</span>s...</div>
+            <button id="redeem-btn" onclick="window.sendMessage(true)" class="btn btn-redeem" disabled>🔥 REDEEM BIG MESSAGE (100💰) 🔥</button>
         </div>
     </div>
 
@@ -131,33 +135,21 @@
 
         let currentCoins = 0;
         let lastSentTime = 0;
-        let api = null; // Jitsi API instance
+        let jitsiApi = null;
 
-        // --- Video Call Logic ---
+        // --- Video Logic ---
         window.startCall = () => {
-            const domain = "meet.jit.si";
-            const options = {
-                roomName: "S2A-Private-Room-Global",
-                width: '100%',
-                height: '100%',
-                parentNode: document.querySelector('#jitsi-container'),
-                userInfo: {
-                    displayName: auth.currentUser.displayName || auth.currentUser.email.split('@')[0]
-                },
-                interfaceConfigOverwrite: {
-                    TOOLBAR_BUTTONS: ['microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen', 'fittowindow', 'hangup', 'profile', 'chat', 'settings', 'videoquality', 'filmstrip', 'tileview']
-                }
-            };
             document.getElementById('video-overlay').style.display = 'flex';
-            api = new JitsiMeetExternalAPI(domain, options);
+            jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", {
+                roomName: "S2A-Global-Elite-Room",
+                width: '100%', height: '100%',
+                parentNode: document.querySelector('#jitsi-container'),
+                userInfo: { displayName: auth.currentUser.displayName || auth.currentUser.email.split('@')[0] }
+            });
         };
+        window.endCall = () => { if(jitsiApi) jitsiApi.dispose(); document.getElementById('video-overlay').style.display = 'none'; };
 
-        window.endCall = () => {
-            if (api) api.dispose();
-            document.getElementById('video-overlay').style.display = 'none';
-        };
-
-        // --- Auth & Chat Logic (Same as before) ---
+        // --- Auth Logic ---
         document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, googleProvider);
         document.getElementById('email-login-btn').onclick = async () => {
             const e = document.getElementById('email').value; const p = document.getElementById('password').value;
@@ -165,55 +157,91 @@
         };
         document.getElementById('logout-btn').onclick = () => signOut(auth);
 
-        window.sendMessage = async () => {
+        // --- Messaging + Coins ---
+        window.sendMessage = async (isBig) => {
             const now = Date.now();
-            if ((now - lastSentTime) / 1000 < 3) return document.getElementById('cooldown-text').style.display = "block";
-            
+            if ((now - lastSentTime) / 1000 < 3) return;
+
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if(!text) return;
 
+            if(isBig && currentCoins < 100) return alert("Insufficient Coins!");
+
             lastSentTime = now;
-            runTransaction(ref(db, `users/${auth.currentUser.uid}/coins`), (v) => (v || 0) + 10);
+            
+            // Transaction for coins
+            runTransaction(ref(db, `users/${auth.currentUser.uid}/coins`), (v) => {
+                return isBig ? (v || 0) - 100 : (v || 0) + 10;
+            });
+
             push(ref(db, 'chat_messages'), {
                 uid: auth.currentUser.uid,
                 name: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
                 text: text,
+                isBig: isBig,
                 time: serverTimestamp()
             });
+
             input.value = "";
-            
-            // Cooldown visual
-            const sendBtn = document.getElementById('send-btn');
-            sendBtn.disabled = true;
-            setTimeout(() => { sendBtn.disabled = false; document.getElementById('cooldown-text').style.display = "none"; }, 3000);
+            startCooldown();
         };
 
-        document.getElementById('send-btn').onclick = () => window.sendMessage();
+        function startCooldown() {
+            const btn = document.getElementById('send-btn');
+            const cdText = document.getElementById('cooldown-text');
+            const sec = document.getElementById('seconds');
+            btn.disabled = true;
+            cdText.style.display = 'block';
+            let left = 3;
+            const timer = setInterval(() => {
+                left--;
+                sec.innerText = left;
+                if(left <= 0) { clearInterval(timer); btn.disabled = false; cdText.style.display = 'none'; sec.innerText = "3"; }
+            }, 1000);
+        }
 
+        document.getElementById('send-btn').onclick = () => window.sendMessage(false);
+        window.deleteMsg = (id) => { if(confirm("Delete message?")) remove(ref(db, `chat_messages/${id}`)); };
+
+        // --- Firebase Listeners ---
         onAuthStateChanged(auth, (user) => {
             document.getElementById('auth-overlay').style.display = user ? 'none' : 'flex';
             document.getElementById('main-platform').style.display = user ? 'flex' : 'none';
-            if(user) onValue(ref(db, `users/${user.uid}/coins`), (s) => document.getElementById('coin-count').innerText = s.val() || 0);
+            if(user) {
+                onValue(ref(db, `users/${user.uid}/coins`), (s) => {
+                    currentCoins = s.val() || 0;
+                    document.getElementById('coin-count').innerText = currentCoins;
+                    document.getElementById('redeem-btn').disabled = currentCoins < 100;
+                });
+            }
         });
 
         onChildAdded(ref(db, 'chat_messages'), async (snap) => {
             const data = snap.val();
+            const id = snap.key;
             const container = document.getElementById('chat-messages');
             const div = document.createElement('div');
+            div.id = `msg-${id}`;
             const isMine = data.uid === auth.currentUser?.uid;
-            div.className = `message ${isMine ? 'mine' : ''}`;
-            div.innerHTML = `<b>${data.name}</b><span>${data.text}</span>`;
+            div.className = `message ${isMine ? 'mine' : ''} ${data.isBig ? 'big-style' : ''}`;
+            div.innerHTML = `${isMine ? `<span class="delete-btn" onclick="window.deleteMsg('${id}')">🗑️</span>` : ''}<b>${data.name}</b><span>${data.text}</span>`;
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
 
-            // Limit to 50
+            // Auto-Clean (Limit 50)
             const snapshot = await get(ref(db, 'chat_messages'));
             if (snapshot.size > 50) {
-                const oldest = query(ref(db, 'chat_messages'), limitToFirst(1));
-                const oldestSnap = await get(oldest);
+                const oldestQuery = query(ref(db, 'chat_messages'), limitToFirst(1));
+                const oldestSnap = await get(oldestQuery);
                 oldestSnap.forEach((c) => remove(ref(db, `chat_messages/${c.key}`)));
             }
+        });
+
+        onChildRemoved(ref(db, 'chat_messages'), (s) => { if(document.getElementById(`msg-${s.key}`)) document.getElementById(`msg-${s.key}`).remove(); });
+
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter' && !document.getElementById('send-btn').disabled) window.sendMessage(false);
         });
     </script>
 </body>
