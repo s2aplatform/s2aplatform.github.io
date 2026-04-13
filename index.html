@@ -16,98 +16,52 @@
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            margin: 0;
-            background-color: var(--dark);
-            color: var(--text);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            /* Added centering for the platform */
-            justify-content: center;
-            align-items: center;
+            margin: 0; background-color: var(--dark); color: var(--text);
+            height: 100vh; display: flex; justify-content: center; align-items: center;
         }
 
         /* --- AUTH SCREEN --- */
         #auth-overlay {
-            position: fixed; 
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--dark); 
-            z-index: 10000;
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark); z-index: 10000; display: flex; justify-content: center; align-items: center;
         }
-        .auth-card {
-            background: var(--card); padding: 40px; border-radius: 16px;
-            width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-        .auth-input {
-            width: 100%; padding: 12px; margin-bottom: 12px;
-            border-radius: 8px; border: 1px solid #333; background: #252525; color: white; box-sizing: border-box;
+        .auth-card { background: var(--card); padding: 40px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center; }
+        .auth-input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #333; background: #252525; color: white; box-sizing: border-box; }
+
+        /* --- MAIN APP --- */
+        #main-platform {
+            display: none; flex-direction: column; width: 95%; max-width: 1000px; height: 85vh;
+            background: #181818; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid #333; overflow: hidden;
         }
 
-        /* --- NAVIGATION --- */
-        nav {
-            background: #0a0a0a; padding: 15px 25px; display: flex;
-            justify-content: space-between; align-items: center; border-bottom: 1px solid #222;
-            border-radius: 16px 16px 0 0;
-        }
+        nav { background: #0a0a0a; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
         .coin-box { color: var(--gold); font-weight: bold; background: #222; padding: 6px 15px; border-radius: 20px; font-size: 0.9rem; }
 
-        /* --- CHAT AREA (Centered & Enlarged) --- */
-        #main-platform {
-            display: none; 
-            flex-direction: column; 
-            width: 95%;
-            max-width: 1000px; /* Increased width */
-            height: 85vh; /* Takes up most of the screen height */
-            background: #181818;
-            border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            border: 1px solid #333;
-            overflow: hidden;
-        }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 15px; background: #141414; }
 
-        #chat-messages {
-            flex: 1; /* Automatically takes up available space */
-            overflow-y: auto; 
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background: #141414;
-        }
-
-        .message {
-            background: #252525; padding: 14px 18px; border-radius: 12px;
-            max-width: 70%; width: fit-content; word-wrap: break-word; position: relative;
-            font-size: 1.05rem;
-        }
+        .message { background: #252525; padding: 14px 18px; border-radius: 12px; max-width: 70%; width: fit-content; word-wrap: break-word; position: relative; }
         .message.mine { align-self: flex-end; background: #333; border-bottom-right-radius: 2px; }
         .message b { color: var(--primary); font-size: 0.8rem; display: block; margin-bottom: 4px; }
         
-        .delete-btn {
-            position: absolute; top: 5px; right: 8px;
-            cursor: pointer; font-size: 14px; opacity: 0.4;
-        }
+        .delete-btn { position: absolute; top: 5px; right: 8px; cursor: pointer; font-size: 14px; opacity: 0.4; }
         .message:hover .delete-btn { opacity: 1; }
 
-        /* --- BIG MESSAGE STYLE --- */
-        .message.big-style {
-            border: 3px solid var(--gold); background: linear-gradient(135deg, #2a2a2a, #111);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); max-width: 90%;
-        }
+        .message.big-style { border: 3px solid var(--gold); background: linear-gradient(135deg, #2a2a2a, #111); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); max-width: 90%; }
         .message.big-style span { font-size: 3rem; font-weight: 800; line-height: 1.1; display: block; padding: 10px 0; }
 
         /* --- INPUT AREA --- */
         .input-area { background: #0a0a0a; padding: 25px; border-top: 1px solid #222; }
         .input-row { display: flex; gap: 15px; }
-        #chat-input { flex: 1; background: #1e1e1e; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; outline: none; font-size: 1rem; }
+        #chat-input { flex: 1; background: #1e1e1e; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; outline: none; }
         
         .btn { padding: 12px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-redeem { background: var(--gold); color: black; font-size: 0.85rem; margin-top: 15px; width: 100%; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-primary:disabled { background: #444; cursor: not-allowed; opacity: 0.6; }
+        
+        .btn-redeem { background: var(--gold); color: black; font-size: 0.85rem; margin-top: 15px; width: 100%; }
         .btn-redeem:disabled { background: #444; color: #777; cursor: not-allowed; }
+        
+        #cooldown-text { color: var(--danger); font-size: 0.75rem; margin-top: 5px; display: none; }
     </style>
 </head>
 <body>
@@ -120,15 +74,14 @@
             <input type="email" id="email" class="auth-input" placeholder="Email">
             <input type="password" id="password" class="auth-input" placeholder="Password">
             <button id="email-login-btn" class="btn btn-primary" style="width: 100%;">Enter Platform</button>
-            <p id="error-msg" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="main-platform">
         <nav>
             <div>
-                <div style="font-weight: bold; color: var(--primary); font-size: 1.2rem;">S2A PLATFORM - 🌏全球即時串人聊天室💬</div>
-                <div style="font-size: 0.7rem; color: #888;">Global real-time chat room 🌏💬</div>
+            <div style="font-weight: bold; color: var(--primary);">S2A PLATFORM-🌏全球即時串人聊天室💬</div>
+            <p>Global real-time chat room</p>
             </div>
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div class="coin-box">💰 <span id="coin-count">0</span></div>
@@ -140,9 +93,10 @@
 
         <div class="input-area">
             <div class="input-row">
-                <input type="text" id="chat-input" placeholder="Type your message here... (+10💰)">
+                <input type="text" id="chat-input" placeholder="Type message... (+10💰)">
                 <button id="send-btn" class="btn btn-primary">Send</button>
             </div>
+            <div id="cooldown-text">Wait <span id="seconds">3</span>s before sending again...</div>
             <button id="redeem-btn" onclick="window.sendMessage(true)" class="btn btn-redeem" disabled>🔥 REDEEM BIG MESSAGE (100💰) 🔥</button>
         </div>
     </div>
@@ -150,7 +104,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, push, onChildAdded, onChildRemoved, onValue, runTransaction, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, onChildRemoved, onValue, runTransaction, serverTimestamp, remove, query, limitToFirst, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAVPhbTlWBa0xBw0wo2wMU7XwynwqwVzGM",
@@ -168,37 +122,44 @@
         const googleProvider = new GoogleAuthProvider();
 
         let currentCoins = 0;
+        let lastSentTime = 0; // Cooldown tracker
 
-        // Functions
-        window.handleGoogleLogin = () => signInWithPopup(auth, googleProvider).catch(e => alert(e.message));
-        window.handleEmailAuth = async () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            if(!email || !pass) return alert("Please fill fields");
-            try { await signInWithEmailAndPassword(auth, email, pass); }
-            catch { await createUserWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message)); }
+        // Auth
+        document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, googleProvider);
+        document.getElementById('email-login-btn').onclick = async () => {
+            const e = document.getElementById('email').value; const p = document.getElementById('password').value;
+            try { await signInWithEmailAndPassword(auth, e, p); } catch { await createUserWithEmailAndPassword(auth, e, p); }
         };
-        window.logout = () => signOut(auth);
-
-        document.getElementById('google-login-btn').onclick = window.handleGoogleLogin;
-        document.getElementById('email-login-btn').onclick = window.handleEmailAuth;
-        document.getElementById('logout-btn').onclick = window.logout;
-        document.getElementById('send-btn').onclick = () => window.sendMessage(false);
+        document.getElementById('logout-btn').onclick = () => signOut(auth);
 
         function addCoins(amount) {
-            const coinRef = ref(db, `users/${auth.currentUser.uid}/coins`);
-            runTransaction(coinRef, (val) => (val || 0) + amount);
+            runTransaction(ref(db, `users/${auth.currentUser.uid}/coins`), (v) => (v || 0) + amount);
         }
 
+        // Messaging + Cooldown
         window.sendMessage = async (isBig) => {
+            const now = Date.now();
+            const timePassed = (now - lastSentTime) / 1000;
+            const sendBtn = document.getElementById('send-btn');
+            const cdText = document.getElementById('cooldown-text');
+            const secText = document.getElementById('seconds');
+
+            // 3 Second Check
+            if (timePassed < 3) {
+                cdText.style.display = "block";
+                return; 
+            }
+
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
-            if(!text || !auth.currentUser) return;
+            if(!text) return;
+            if(isBig && currentCoins < 100) return alert("No coins!");
 
-            if(isBig) {
-                if(currentCoins < 100) return alert("Insufficient Coins!");
-                addCoins(-100);
-            } else { addCoins(10); }
+            // Success: Update lastSentTime
+            lastSentTime = now;
+            cdText.style.display = "none";
+
+            if(isBig) addCoins(-100); else addCoins(10);
 
             push(ref(db, 'chat_messages'), {
                 uid: auth.currentUser.uid,
@@ -207,31 +168,41 @@
                 isBig: isBig,
                 time: serverTimestamp()
             });
+
             input.value = "";
+
+            // Visual cooldown on button
+            sendBtn.disabled = true;
+            let timeLeft = 3;
+            secText.innerText = timeLeft;
+            const timer = setInterval(() => {
+                timeLeft--;
+                secText.innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    sendBtn.disabled = false;
+                    cdText.style.display = "none";
+                }
+            }, 1000);
         };
 
-        window.deleteMsg = (id) => {
-            if(confirm("Delete this message?")) remove(ref(db, `chat_messages/${id}`));
-        };
+        document.getElementById('send-btn').onclick = () => window.sendMessage(false);
+
+        window.deleteMsg = (id) => { if(confirm("Delete?")) remove(ref(db, `chat_messages/${id}`)); };
 
         onAuthStateChanged(auth, (user) => {
-            const overlay = document.getElementById('auth-overlay');
-            const platform = document.getElementById('main-platform');
+            document.getElementById('auth-overlay').style.display = user ? 'none' : 'flex';
+            document.getElementById('main-platform').style.display = user ? 'flex' : 'none';
             if(user) {
-                overlay.style.display = 'none';
-                platform.style.display = 'flex';
-                onValue(ref(db, `users/${user.uid}/coins`), (snap) => {
-                    currentCoins = snap.val() || 0;
+                onValue(ref(db, `users/${user.uid}/coins`), (s) => {
+                    currentCoins = s.val() || 0;
                     document.getElementById('coin-count').innerText = currentCoins;
-                    document.getElementById('redeem-btn').disabled = (currentCoins < 100);
+                    document.getElementById('redeem-btn').disabled = currentCoins < 100;
                 });
-            } else {
-                overlay.style.display = 'flex';
-                platform.style.display = 'none';
             }
         });
 
-        onChildAdded(ref(db, 'chat_messages'), (snap) => {
+        onChildAdded(ref(db, 'chat_messages'), async (snap) => {
             const data = snap.val();
             const id = snap.key;
             const container = document.getElementById('chat-messages');
@@ -239,22 +210,26 @@
             div.id = `msg-${id}`;
             const isMine = data.uid === auth.currentUser?.uid;
             div.className = `message ${isMine ? 'mine' : ''} ${data.isBig ? 'big-style' : ''}`;
-            div.innerHTML = `
-                ${isMine ? `<span class="delete-btn" onclick="window.deleteMsg('${id}')">🗑️</span>` : ''}
-                <b>${data.name}</b>
-                <span>${data.text}</span>
-            `;
+            div.innerHTML = `${isMine ? `<span class="delete-btn" onclick="window.deleteMsg('${id}')">🗑️</span>` : ''}<b>${data.name}</b><span>${data.text}</span>`;
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
+
+            // Auto-Clean Limit 50
+            const snapshot = await get(ref(db, 'chat_messages'));
+            if (snapshot.size > 50) {
+                const oldest = query(ref(db, 'chat_messages'), limitToFirst(1));
+                const oldestSnap = await get(oldest);
+                oldestSnap.forEach((c) => remove(ref(db, `chat_messages/${c.key}`)));
+            }
         });
 
-        onChildRemoved(ref(db, 'chat_messages'), (snap) => {
-            const el = document.getElementById(`msg-${snap.key}`);
-            if(el) el.remove();
+        onChildRemoved(ref(db, 'chat_messages'), (s) => { 
+            const el = document.getElementById(`msg-${s.key}`);
+            if(el) el.remove(); 
         });
 
         document.getElementById('chat-input').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') window.sendMessage(false);
+            if(e.key === 'Enter' && !document.getElementById('send-btn').disabled) window.sendMessage(false);
         });
     </script>
 </body>
