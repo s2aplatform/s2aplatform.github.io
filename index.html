@@ -3,69 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>S2A-Platform</title>
+    <title>S2A Platform - Home</title>
     <style>
-        /* CSS STYLES */
         :root {
             --primary: #ff6d00;
-            --dark: #1a1a1a;
-            --light: #f4f4f4;
+            --dark: #121212;
+            --card: #1e1e1e;
+            --gold: #ffd700;
+            --text: #e0e0e0;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0;
             background-color: var(--dark);
-            color: white;
+            color: var(--text);
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* Login Screen Logic */
+        /* --- AUTH SCREEN --- */
         #auth-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--dark);
             z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
         }
 
         .auth-card {
-            background: #2a2a2a;
+            background: var(--card);
             padding: 40px;
-            border-radius: 15px;
+            border-radius: 16px;
             width: 90%;
             max-width: 400px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
-        /* Navigation */
+        .auth-input {
+            width: 100%; padding: 12px; margin-bottom: 12px;
+            border-radius: 8px; border: 1px solid #333;
+            background: #252525; color: white; box-sizing: border-box;
+        }
+
+        /* --- NAVIGATION --- */
         nav {
-            background: #111;
+            background: #0a0a0a;
             padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid #222;
         }
 
-        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
+        .coin-box {
+            color: var(--gold);
+            font-weight: bold;
+            background: #222;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid #333;
+        }
 
-        /* Chat Area */
+        /* --- CHAT AREA --- */
         #main-platform {
             flex: 1;
             display: flex;
             flex-direction: column;
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
             width: 100%;
-            background: #222;
-            visibility: hidden; /* Hidden until login */
+            background: #181818;
+            visibility: hidden; /* Only visible after login */
         }
 
         #chat-messages {
@@ -74,111 +86,121 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
         .message {
-            background: #333;
+            background: #252525;
             padding: 10px 15px;
-            border-radius: 10px;
-            max-width: 80%;
+            border-radius: 12px;
+            max-width: 75%;
             width: fit-content;
+            word-wrap: break-word;
         }
 
-        .message b { color: var(--primary); display: block; font-size: 0.8rem; margin-bottom: 4px; }
-        .message img { max-width: 100%; border-radius: 8px; margin-top: 10px; cursor: pointer; }
+        .message.mine { align-self: flex-end; background: #333; border-bottom-right-radius: 2px; }
+        .message b { color: var(--primary); font-size: 0.75rem; display: block; margin-bottom: 4px; }
+        .message img { max-width: 100%; border-radius: 8px; margin-top: 8px; cursor: pointer; }
 
-        /* Input Area */
-        .chat-input-wrapper {
-            background: #111;
+        /* --- BIG MESSAGE STYLE --- */
+        .message.big-style {
+            border: 2px solid var(--gold);
+            background: linear-gradient(135deg, #2a2a2a, #111);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            max-width: 90%;
+        }
+        .message.big-style span {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.1;
+            display: block;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* --- INPUT --- */
+        .input-area {
+            background: #0a0a0a;
             padding: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
+            border-top: 1px solid #222;
         }
 
-        input[type="text"] {
-            flex: 1;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            outline: none;
+        .input-row { display: flex; gap: 10px; }
+        
+        #chat-input {
+            flex: 1; background: #1e1e1e; border: 1px solid #333;
+            color: white; padding: 12px; border-radius: 8px; outline: none;
         }
 
         .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
+            padding: 10px 20px; border-radius: 8px; border: none;
+            cursor: pointer; font-weight: bold; transition: 0.2s;
         }
 
         .btn-primary { background: var(--primary); color: white; }
-        .btn-google { background: white; color: black; width: 100%; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        
-        .divider { margin: 20px 0; color: #666; font-size: 0.8rem; display: flex; align-items: center; }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #333; margin: 0 10px; }
+        .btn-google { background: white; color: black; width: 100%; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-redeem { 
+            background: var(--gold); color: black; font-size: 0.75rem; 
+            margin-top: 10px; width: 100%; 
+        }
+        .btn-redeem:disabled { background: #444; color: #777; cursor: not-allowed; }
 
-        #upload-status { font-size: 0.7rem; color: var(--primary); margin-bottom: 5px; }
+        .divider { margin: 20px 0; color: #444; font-size: 0.8rem; display: flex; align-items: center; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #222; margin: 0 10px; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div class="auth-card">
-            <h1 style="color: var(--primary);">S2A Platform</h1>
-            <p style="color: #888;">請登入以進入平台</p>
+            <h1 style="color: var(--primary); margin: 0 0 10px 0;">S2A Platform</h1>
+            <p style="color: #666; margin-bottom: 25px;">Welcome! Please login to continue.</p>
             
             <button onclick="handleGoogleLogin()" class="btn btn-google">
-                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="18">
-                使用 Google 登入
+                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="18"> 
+                Google Sign In
             </button>
 
-            <div class="divider">或使用電子郵件</div>
+            <div class="divider">OR</div>
 
-            <input type="email" id="email" placeholder="電子郵件" style="width:100%; box-sizing:border-box; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #444; background:#333; color:white;">
-            <input type="password" id="password" placeholder="密碼" style="width:100%; box-sizing:border-box; padding:12px; margin-bottom:15px; border-radius:8px; border:1px solid #444; background:#333; color:white;">
+            <input type="email" id="email" class="auth-input" placeholder="Email">
+            <input type="password" id="password" class="auth-input" placeholder="Password">
             
-            <div style="display: flex; gap: 10px;">
-                <button onclick="handleEmailAuth('signin')" class="btn btn-primary" style="flex:1;">登入</button>
-                <button onclick="handleEmailAuth('signup')" class="btn" style="flex:1; background:#444; color:white;">註冊</button>
-            </div>
+            <button onclick="handleEmailAuth()" class="btn btn-primary" style="width: 100%;">Sign In / Register</button>
             <p id="error-msg" style="color: #ff4444; font-size: 0.8rem; margin-top: 15px;"></p>
         </div>
     </div>
 
     <div id="main-platform">
         <nav>
-            <div class="logo">S2A Platform</div>
+            <div style="font-weight: bold; color: var(--primary); letter-spacing: 1px;">S2A PLATFORM</div>
             <div style="display: flex; align-items: center; gap: 15px;">
-                <span id="user-name" style="font-size: 0.9rem; color: #888;"></span>
-                <button onclick="logout()" class="btn" style="background:#333; color:white; padding: 5px 12px;">登出</button>
+                <div class="coin-box">💰 <span id="coin-count">0</span></div>
+                <button onclick="logout()" class="btn" style="background:#222; color:#888; padding: 5px 10px; font-size:0.75rem;">Logout</button>
             </div>
         </nav>
 
         <div id="chat-messages">
             </div>
 
-        <div class="chat-input-wrapper">
-            <div style="width: 100%;">
-                <div id="upload-status" style="display:none;">圖片上傳中...</div>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="chat-input" placeholder="輸入訊息...">
-                    <input type="file" id="img-file" accept="image/*" style="display:none;" onchange="uploadImage()">
-                    <button onclick="document.getElementById('img-file').click()" class="btn" style="background:#444;">📷</button>
-                    <button onclick="sendText()" class="btn btn-primary">發送</button>
-                </div>
+        <div class="input-area">
+            <div id="upload-status" style="display:none; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px;">Uploading Image...</div>
+            <div class="input-row">
+                <input type="text" id="chat-input" placeholder="Type a message... (+10💰)">
+                <input type="file" id="img-file" accept="image/*" style="display:none;" onchange="uploadImage()">
+                <button onclick="document.getElementById('img-file').click()" class="btn" style="background:#222; color:white;">📷</button>
+                <button onclick="sendMessage(false)" class="btn btn-primary">Send</button>
             </div>
+            <button id="redeem-btn" onclick="sendMessage(true)" class="btn btn-redeem" disabled>
+                REDEEM BIG MESSAGE (Costs 100 💰)
+            </button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, onValue, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -195,91 +217,118 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
         const storage = getStorage(app);
-        const chatRef = ref(db, 'chat_messages');
         const googleProvider = new GoogleAuthProvider();
 
-        const clean = (s) => s ? s.replace(/[.$#[\]/]/g, "_") : "User";
+        let currentCoins = 0;
 
-        // Auth Functions
-        window.handleGoogleLogin = () => signInWithPopup(auth, googleProvider).catch(e => document.getElementById('error-msg').innerText = e.message);
+        // --- AUTH LOGIC ---
+        window.handleGoogleLogin = () => signInWithPopup(auth, googleProvider).catch(e => alert(e.message));
         
-        window.handleEmailAuth = (mode) => {
+        window.handleEmailAuth = async () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            const action = mode === 'signup' ? createUserWithEmailAndPassword : signInWithEmailAndPassword;
-            action(auth, email, pass).catch(e => document.getElementById('error-msg').innerText = e.message);
+            if(!email || !pass) return;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (e) {
+                try { await createUserWithEmailAndPassword(auth, email, pass); }
+                catch (err) { document.getElementById('error-msg').innerText = "Auth Error: " + err.message; }
+            }
         };
 
         window.logout = () => signOut(auth);
 
-        // Chat Functions
-        window.sendText = () => {
+        // --- COIN LOGIC ---
+        function addCoins(amount) {
+            const coinRef = ref(db, `users/${auth.currentUser.uid}/coins`);
+            runTransaction(coinRef, (val) => (val || 0) + amount);
+        }
+
+        // --- CHAT LOGIC ---
+        window.sendMessage = async (isBig) => {
             const input = document.getElementById('chat-input');
-            if (input.value.trim() && auth.currentUser) {
-                push(chatRef, {
-                    uid: auth.currentUser.uid,
-                    name: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
-                    text: input.value,
-                    time: serverTimestamp()
-                });
-                input.value = "";
+            const text = input.value.trim();
+            if(!text || !auth.currentUser) return;
+
+            if(isBig) {
+                if(currentCoins < 100) return alert("Not enough coins!");
+                addCoins(-100);
+            } else {
+                addCoins(10);
             }
+
+            push(ref(db, 'chat_messages'), {
+                uid: auth.currentUser.uid,
+                name: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
+                text: text,
+                isBig: isBig,
+                time: serverTimestamp()
+            });
+            input.value = "";
         };
 
         window.uploadImage = async () => {
             const file = document.getElementById('img-file').files[0];
-            if (!file || !auth.currentUser) return;
+            if(!file || !auth.currentUser) return;
             document.getElementById('upload-status').style.display = 'block';
 
             try {
-                const path = `chat/${Date.now()}_${clean(file.name)}`;
-                const storageRef = sRef(storage, path);
+                const fileName = `${Date.now()}_${file.name.replace(/[.$#[\]/]/g, "_")}`;
+                const storageRef = sRef(storage, `chat_images/${fileName}`);
                 await uploadBytes(storageRef, file);
                 const url = await getDownloadURL(storageRef);
 
-                push(chatRef, {
+                addCoins(10); // Reward for image
+                push(ref(db, 'chat_messages'), {
                     uid: auth.currentUser.uid,
                     name: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
                     image: url,
                     time: serverTimestamp()
                 });
-            } catch (e) { alert("上傳失敗"); }
+            } catch (e) { alert("Upload failed"); }
             document.getElementById('upload-status').style.display = 'none';
         };
 
-        // UI Listeners
+        // --- EVENT LISTENERS ---
         onAuthStateChanged(auth, (user) => {
             const overlay = document.getElementById('auth-overlay');
             const platform = document.getElementById('main-platform');
             if (user) {
                 overlay.style.display = 'none';
                 platform.style.visibility = 'visible';
-                document.getElementById('user-name').innerText = user.displayName || user.email;
+                
+                // Track User Coins
+                onValue(ref(db, `users/${user.uid}/coins`), (snap) => {
+                    currentCoins = snap.val() || 0;
+                    document.getElementById('coin-count').innerText = currentCoins;
+                    document.getElementById('redeem-btn').disabled = (currentCoins < 100);
+                });
             } else {
                 overlay.style.display = 'flex';
                 platform.style.visibility = 'hidden';
             }
         });
 
-        onChildAdded(chatRef, (snap) => {
+        onChildAdded(ref(db, 'chat_messages'), (snap) => {
             const data = snap.val();
-            const box = document.getElementById('chat-messages');
+            const container = document.getElementById('chat-messages');
             const div = document.createElement('div');
-            div.className = 'message';
-            if (data.uid === auth.currentUser?.uid) div.style.alignSelf = 'flex-end';
             
-            let html = `<b>${data.name}</b>`;
-            if (data.text) html += `<span>${data.text}</span>`;
-            if (data.image) html += `<img src="${data.image}" onclick="window.open('${data.image}')">`;
+            const isMine = data.uid === auth.currentUser?.uid;
+            div.className = `message ${isMine ? 'mine' : ''} ${data.isBig ? 'big-style' : ''}`;
             
-            div.innerHTML = html;
-            box.appendChild(div);
-            box.scrollTop = box.scrollHeight;
+            let content = `<b>${data.name} ${data.isBig ? '👑 BIG MSG' : ''}</b>`;
+            if (data.text) content += `<span>${data.text}</span>`;
+            if (data.image) content += `<img src="${data.image}" onclick="window.open('${data.image}')">`;
+            
+            div.innerHTML = content;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
         });
 
-        // Enter key to send
+        // Submit on Enter
         document.getElementById('chat-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendText();
+            if(e.key === 'Enter') sendMessage(false);
         });
     </script>
 </body>
