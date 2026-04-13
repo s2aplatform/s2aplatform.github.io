@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>S2A Platform</title>
+    <style>
+        /* CSS STYLES */
+        :root {
+            --primary: #ff6d00;
+            --dark: #1a1a1a;
+            --light: #f4f4f4;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--dark);
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Login Screen Logic */
+        #auth-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-card {
+            background: #2a2a2a;
+            padding: 40px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Navigation */
+        nav {
+            background: #111;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
+
+        /* Chat Area */
+        #main-platform {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            background: #222;
+            visibility: hidden; /* Hidden until login */
+        }
+
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            background: #333;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 80%;
+            width: fit-content;
+        }
+
+        .message b { color: var(--primary); display: block; font-size: 0.8rem; margin-bottom: 4px; }
+        .message img { max-width: 100%; border-radius: 8px; margin-top: 10px; cursor: pointer; }
+
+        /* Input Area */
+        .chat-input-wrapper {
+            background: #111;
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-google { background: white; color: black; width: 100%; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        
+        .divider { margin: 20px 0; color: #666; font-size: 0.8rem; display: flex; align-items: center; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #333; margin: 0 10px; }
+
+        #upload-status { font-size: 0.7rem; color: var(--primary); margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <h1 style="color: var(--primary);">S2A Platform</h1>
+            <p style="color: #888;">請登入以進入平台</p>
+            
+            <button onclick="handleGoogleLogin()" class="btn btn-google">
+                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="18">
+                使用 Google 登入
+            </button>
+
+            <div class="divider">或使用電子郵件</div>
+
+            <input type="email" id="email" placeholder="電子郵件" style="width:100%; box-sizing:border-box; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #444; background:#333; color:white;">
+            <input type="password" id="password" placeholder="密碼" style="width:100%; box-sizing:border-box; padding:12px; margin-bottom:15px; border-radius:8px; border:1px solid #444; background:#333; color:white;">
+            
+            <div style="display: flex; gap: 10px;">
+                <button onclick="handleEmailAuth('signin')" class="btn btn-primary" style="flex:1;">登入</button>
+                <button onclick="handleEmailAuth('signup')" class="btn" style="flex:1; background:#444; color:white;">註冊</button>
+            </div>
+            <p id="error-msg" style="color: #ff4444; font-size: 0.8rem; margin-top: 15px;"></p>
+        </div>
+    </div>
+
+    <div id="main-platform">
+        <nav>
+            <div class="logo">S2A Platform</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span id="user-name" style="font-size: 0.9rem; color: #888;"></span>
+                <button onclick="logout()" class="btn" style="background:#333; color:white; padding: 5px 12px;">登出</button>
+            </div>
+        </nav>
+
+        <div id="chat-messages">
+            </div>
+
+        <div class="chat-input-wrapper">
+            <div style="width: 100%;">
+                <div id="upload-status" style="display:none;">圖片上傳中...</div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chat-input" placeholder="輸入訊息...">
+                    <input type="file" id="img-file" accept="image/*" style="display:none;" onchange="uploadImage()">
+                    <button onclick="document.getElementById('img-file').click()" class="btn" style="background:#444;">📷</button>
+                    <button onclick="sendText()" class="btn btn-primary">發送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAVPhbTlWBa0xBw0wo2wMU7XwynwqwVzGM",
+            authDomain: "ccc-loginsystem.firebaseapp.com",
+            projectId: "ccc-loginsystem",
+            databaseURL: "https://ccc-loginsystem-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            storageBucket: "ccc-loginsystem.appspot.com",
+            messagingSenderId: "205395547650",
+            appId: "1:205395547650:web:fd8270d52e193ee03cb91b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+        const chatRef = ref(db, 'chat_messages');
+        const googleProvider = new GoogleAuthProvider();
+
+        const clean = (s) => s ? s.replace(/[.$#[\]/]/g, "_") : "User";
+
+        // Auth Functions
+        window.handleGoogleLogin = () => signInWithPopup(auth, googleProvider).catch(e => document.getElementById('error-msg').innerText = e.message);
+        
+        window.handleEmailAuth = (mode) => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const action = mode === 'signup' ? createUserWithEmailAndPassword : signInWithEmailAndPassword;
+            action(auth, email, pass).catch(e => document.getElementById('error-msg').innerText = e.message);
+        };
+
+        window.logout = () => signOut(auth);
+
+        // Chat Functions
+        window.sendText = () => {
+            const input = document.getElementById('chat-input');
+            if (input.value.trim() && auth.currentUser) {
+                push(chatRef, {
+                    uid: auth.currentUser.uid,
+                    name: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
+                    text: input.value,
+                    time: serverTimestamp()
+                });
+                input.value = "";
+            }
+        };
+
+        window.uploadImage = async () => {
+            const file = document.getElementById('img-file').files[0];
+            if (!file || !auth.currentUser) return;
+            document.getElementById('upload-status').style.display = 'block';
+
+            try {
+                const path = `chat/${Date.now()}_${clean(file.name)}`;
+                const storageRef = sRef(storage, path);
+                await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(storageRef);
+
+                push(chatRef, {
+                    uid: auth.currentUser.uid,
+                    name: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
+                    image: url,
+                    time: serverTimestamp()
+                });
+            } catch (e) { alert("上傳失敗"); }
+            document.getElementById('upload-status').style.display = 'none';
+        };
+
+        // UI Listeners
+        onAuthStateChanged(auth, (user) => {
+            const overlay = document.getElementById('auth-overlay');
+            const platform = document.getElementById('main-platform');
+            if (user) {
+                overlay.style.display = 'none';
+                platform.style.visibility = 'visible';
+                document.getElementById('user-name').innerText = user.displayName || user.email;
+            } else {
+                overlay.style.display = 'flex';
+                platform.style.visibility = 'hidden';
+            }
+        });
+
+        onChildAdded(chatRef, (snap) => {
+            const data = snap.val();
+            const box = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'message';
+            if (data.uid === auth.currentUser?.uid) div.style.alignSelf = 'flex-end';
+            
+            let html = `<b>${data.name}</b>`;
+            if (data.text) html += `<span>${data.text}</span>`;
+            if (data.image) html += `<img src="${data.image}" onclick="window.open('${data.image}')">`;
+            
+            div.innerHTML = html;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        });
+
+        // Enter key to send
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendText();
+        });
+    </script>
+</body>
+</html>
