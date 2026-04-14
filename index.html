@@ -3,178 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>S2A Platform</title>
+    <title>S2A Platform - Pro</title>
     <script src='https://8x8.vc/vpaas-magic-cookie-36a469735d454659a5848600885e3532/external_api.js'></script>
     <style>
         :root {
-            --primary: #ff6d00;
-            --primary-glow: rgba(255, 109, 0, 0.4);
-            --gold: #ffd700;
-            --danger: #ff4444;
-            --success: #00c853;
-            --broadcast: #ff00ff;
-            /* Dark Theme */
-            --bg: #0f0f12;
-            --panel: rgba(30, 30, 35, 0.8);
-            --nav: #16161a;
-            --text: #ffffff;
-            --subtext: #a0a0ab;
-            --border: rgba(255, 255, 255, 0.08);
-            --input: #1c1c21;
+            --primary: #ff6d00; --gold: #ffd700; --danger: #ff4444; --success: #00c853; --broadcast: #ff00ff;
+            --bg: #121212; --nav-bg: #0a0a0a; --card-bg: #1e1e1e; --chat-bg: #141414; --msg-bg: #252525;
+            --text: #e0e0e0; --border: #333; --input-bg: #1e1e1e;
         }
 
         [data-theme="light"] {
-            --bg: #f4f4f9;
-            --panel: rgba(255, 255, 255, 0.9);
-            --nav: #ffffff;
-            --text: #1a1a1e;
-            --subtext: #666670;
-            --border: rgba(0, 0, 0, 0.1);
-            --input: #ffffff;
+            --bg: #f0f2f5; --nav-bg: #ffffff; --card-bg: #ffffff; --chat-bg: #f9f9f9;
+            --msg-bg: #e4e6eb; --text: #1c1e21; --border: #ddd; --input-bg: #ffffff;
         }
 
-        body { 
-            font-family: 'Inter', -apple-system, system-ui, sans-serif; 
-            margin: 0; background-color: var(--bg); color: var(--text); 
-            height: 100vh; display: flex; justify-content: center; align-items: center; 
-            overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--bg); color: var(--text); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; transition: 0.3s; }
 
-        /* --- OVERLAYS --- */
-        #broadcast-screen { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 20000; 
-            display: none; justify-content: center; align-items: center; text-align: center;
-            backdrop-filter: blur(10px);
-        }
-        .broadcast-content h1 { 
-            font-size: 5rem; font-weight: 900; color: var(--broadcast); 
-            text-shadow: 0 0 40px var(--broadcast); margin: 0;
-            animation: pulse 1.5s infinite alternate;
-        }
+        /* --- BROADCAST & VIDEO --- */
+        #broadcast-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 20000; display: none; justify-content: center; align-items: center; text-align: center; }
+        .broadcast-content { color: var(--broadcast); font-size: 4rem; font-weight: 900; }
+        #video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; display: none; flex-direction: column; }
+        #jitsi-container { flex: 1; width: 100%; }
 
-        #video-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
+        /* --- AUTH --- */
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; justify-content: center; align-items: center; }
+        .auth-card { background: #1e1e1e; padding: 30px; border-radius: 16px; width: 90%; max-width: 380px; text-align: center; }
+        .auth-input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #333; background: #2b2b2b; color: white; box-sizing: border-box; }
 
-        /* --- AUTH CARD --- */
-        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; justify-content: center; align-items: center; }
-        .auth-card { 
-            background: var(--nav); padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; 
-            text-align: center; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-        .auth-input { 
-            width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; 
-            border: 1px solid var(--border); background: var(--input); color: var(--text); box-sizing: border-box; 
-        }
-
-        /* --- MAIN INTERFACE --- */
-        #main-platform { 
-            display: none; flex-direction: column; width: 95%; max-width: 1100px; height: 90vh; 
-            background: var(--panel); border-radius: 30px; backdrop-filter: blur(20px);
-            border: 1px solid var(--border); box-shadow: 0 30px 60px rgba(0,0,0,0.5); overflow: hidden;
-        }
-
-        nav { 
-            background: var(--nav); padding: 20px 30px; display: flex; justify-content: space-between; 
-            align-items: center; border-bottom: 1px solid var(--border); 
-        }
-
-        #chat-messages { 
-            flex: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 20px; 
-            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.05));
-        }
-
-        /* --- MESSAGE STYLING --- */
-        .message { 
-            padding: 14px 20px; border-radius: 18px; max-width: 65%; position: relative; 
-            background: var(--input); border: 1px solid var(--border); animation: slideUp 0.3s ease;
-        }
-        .message.mine { 
-            align-self: flex-end; background: var(--primary); color: white; border: none;
-            box-shadow: 0 4px 15px var(--primary-glow); border-bottom-right-radius: 4px;
-        }
-        .message b { font-size: 0.75rem; color: var(--primary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .message.mine b { color: rgba(255,255,255,0.8); }
+        /* --- MAIN --- */
+        #main-platform { display: none; flex-direction: column; width: 95%; max-width: 1000px; height: 85vh; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
+        nav { background: var(--nav-bg); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 12px; background: var(--chat-bg); }
         
-        .message.big-style { 
-            max-width: 85%; border: 2px solid var(--gold); background: #000 !important; 
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); 
-        }
-        .message.big-style span { font-size: 2.5rem; font-weight: 800; color: var(--gold); display: block; line-height: 1.1; }
+        .message { background: var(--msg-bg); padding: 12px 16px; border-radius: 12px; max-width: 70%; position: relative; }
+        .message.mine { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .message b { color: var(--primary); font-size: 0.75rem; display: block; }
+        .delete-btn { position: absolute; top: 5px; right: 8px; cursor: pointer; opacity: 0; transition: 0.2s; }
+        .message:hover .delete-btn { opacity: 0.6; }
+        
+        .message.big-style { border: 2px solid var(--gold); background: linear-gradient(135deg, #2a2a2a, #000) !important; color: white; max-width: 90%; }
+        .message.big-style span { font-size: 2.2rem; font-weight: 800; color: var(--gold); }
 
-        .delete-btn { position: absolute; -right: 35px; top: 50%; transform: translateY(-50%); cursor: pointer; opacity: 0; transition: 0.2s; font-size: 1.2rem; }
-        .message:hover .delete-btn { opacity: 0.5; }
-
-        /* --- CONTROLS --- */
-        .input-area { padding: 25px 35px; background: var(--nav); border-top: 1px solid var(--border); }
-        .btn { 
-            padding: 12px 24px; border-radius: 12px; border: none; cursor: pointer; 
-            font-weight: 700; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn:active { transform: scale(0.96); }
+        .btn { padding: 10px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-call { background: var(--success); color: white; box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3); }
-
-        .coin-display { 
-            background: rgba(255, 215, 0, 0.1); color: var(--gold); border: 1px solid rgba(255, 215, 0, 0.2);
-            padding: 8px 16px; border-radius: 100px; font-weight: 800;
-        }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { from { transform: scale(1); opacity: 1; } to { transform: scale(1.05); opacity: 0.8; } }
     </style>
 </head>
 <body data-theme="dark">
 
-    <div id="broadcast-screen"><div class="broadcast-content"><p id="broadcast-user" style="color:white; letter-spacing:2px;"></p><h1 id="broadcast-msg"></h1></div></div>
-    
-    <div id="video-overlay">
-        <div style="padding: 15px; background: #000; display: flex; justify-content: flex-end;">
-            <button class="btn" style="background:var(--danger); color:white;" onclick="endCall()">End Call</button>
-        </div>
-        <div id="jitsi-container"></div>
-    </div>
+    <div id="broadcast-screen"><div class="broadcast-content"><div id="broadcast-user" style="font-size: 1.2rem; color: #fff;"></div><div id="broadcast-msg"></div></div></div>
+    <div id="video-overlay"><button class="btn" style="background:var(--danger); color:white; border-radius:0;" onclick="endCall()">❌ EXIT CALL</button><div id="jitsi-container"></div></div>
 
     <div id="auth-overlay">
         <div class="auth-card">
-            <h1 style="margin: 0 0 10px 0; font-size: 2rem;">S2A <span style="color:var(--primary)">Elite</span></h1>
-            <p style="color:var(--subtext); margin-bottom: 30px;">Access the secure command center</p>
-            <button id="google-login-btn" class="btn" style="width:100%; background:white; color:black; margin-bottom:20px;">
-                Continue with Google
-            </button>
-            <div style="height: 1px; background: var(--border); margin-bottom: 20px; position: relative;">
-                <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--nav); padding: 0 10px; font-size: 0.8rem; color: var(--subtext);">OR</span>
-            </div>
-            <input type="email" id="email" class="auth-input" placeholder="Email">
+            <h1 style="color: var(--primary); margin: 0 0 20px 0;">S2A Platform</h1>
+            <button id="google-login-btn" class="btn" style="width:100%; background:white; color:black; margin-bottom:15px;">Login with Google</button>
+            <input type="email" id="email" class="auth-input" placeholder="Email Address">
             <input type="password" id="password" class="auth-input" placeholder="Password">
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <div style="display: flex; gap: 10px;">
                 <button id="login-btn" class="btn btn-primary" style="flex:1;">Login</button>
-                <button id="signup-btn" class="btn" style="flex:1; background:rgba(255,255,255,0.05); color:white;">Sign Up</button>
+                <button id="signup-btn" class="btn" style="flex:1; background:#333; color:white;">Sign Up</button>
             </div>
+            <p id="auth-error" style="color: var(--danger); font-size: 0.75rem; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="main-platform">
         <nav>
-            <div style="display: flex; align-items: center; gap: 20px;">
-                <div style="font-weight: bold; color: var(--primary);">S2A PLATFORM - 🌏全球即時串人聊天室💬</div>
-                <button class="btn" id="theme-toggle" style="background:rgba(255,255,255,0.05); color:var(--text); font-size:0.8rem; padding: 6px 12px;">🌙 Theme</button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <b style="color: var(--primary);">S2A</b>
+                <button class="btn" id="theme-toggle" style="background:var(--msg-bg); color:var(--text); font-size:0.7rem;">🌙 Theme</button>
             </div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <button class="btn btn-call" onclick="startCall()">📞 Call</button>
-                <div class="coin-display">💰 <span id="coin-count">0</span></div>
-                <button id="logout-btn" class="btn" style="background:transparent; color:var(--subtext); font-size:0.8rem;">Logout</button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="btn" style="background:var(--success); color:white; padding:5px 12px; font-size:0.8rem;" onclick="startCall()">📞 CALL</button>
+                <div style="color:var(--gold); font-weight:bold;">💰<span id="coin-count">0</span></div>
+                <button id="logout-btn" class="btn" style="background:rgba(255,255,255,0.1); color:var(--text); font-size:0.7rem;">Logout</button>
             </div>
         </nav>
-
         <div id="chat-messages"></div>
-
-        <div class="input-area">
-            <div style="display:flex; gap:12px; margin-bottom: 15px;">
-                <input type="text" id="chat-input" style="flex:1; padding:15px 20px; border-radius:15px; border:1px solid var(--border); background:var(--input); color:var(--text); font-size: 1rem; outline:none;" placeholder="Transmit a message...">
-                <button id="send-btn" class="btn btn-primary" style="padding: 0 30px;">Send</button>
+        <div class="input-area" style="background: var(--nav-bg); padding: 20px; border-top: 1px solid var(--border);">
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="chat-input" style="flex:1; padding:12px; border-radius:8px; border:1px solid var(--border); background:var(--input-bg); color:var(--text);" placeholder="Message...">
+                <button id="send-btn" class="btn btn-primary">Send</button>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button id="redeem-big" onclick="window.sendMessage('big')" class="btn" style="background:var(--gold); color:black; flex:1; font-size:0.8rem;" disabled>BIG MESSAGE (100💰)</button>
-                <button id="redeem-broadcast" onclick="window.sendMessage('broadcast')" class="btn" style="background:var(--broadcast); color:white; flex:1; font-size:0.8rem;" disabled>GLOBAL BROADCAST (500💰)</button>
+            <div style="display: flex; gap: 8px; margin-top:10px;">
+                <button id="redeem-big" onclick="window.sendMessage('big')" class="btn" style="background:var(--gold); color:black; font-size:0.7rem; flex:1;" disabled>BIG MSG (100💰)</button>
+                <button id="redeem-broadcast" onclick="window.sendMessage('broadcast')" class="btn" style="background:var(--broadcast); color:white; font-size:0.7rem; flex:1;" disabled>BROADCAST (500💰)</button>
             </div>
         </div>
     </div>
@@ -205,15 +118,14 @@
         document.getElementById('theme-toggle').onclick = () => {
             const t = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.body.setAttribute('data-theme', t);
-            document.getElementById('theme-toggle').innerText = t === 'dark' ? '🌙 Theme' : '☀️ Theme';
         };
 
         // --- Auth ---
         document.getElementById('login-btn').onclick = () => {
-            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert("Access Denied"));
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert("Login Failed"));
         };
         document.getElementById('signup-btn').onclick = () => {
-            createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert("Registry Failed"));
+            createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert("Signup Failed"));
         };
         document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, googleProvider);
         document.getElementById('logout-btn').onclick = () => signOut(auth);
@@ -229,29 +141,30 @@
             });
         });
 
-        // --- Core ---
+        // --- Video/Broadcast ---
         window.startCall = () => {
             document.getElementById('video-overlay').style.display = 'flex';
-            jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", { roomName: "S2A-Elite-Command", parentNode: document.querySelector('#jitsi-container'), userInfo: { displayName: auth.currentUser.displayName || "Elite User" } });
+            jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", { roomName: "S2A-Global-Pro", parentNode: document.querySelector('#jitsi-container'), userInfo: { displayName: auth.currentUser.displayName || "User" } });
         };
         window.endCall = () => { if(jitsiApi) jitsiApi.dispose(); document.getElementById('video-overlay').style.display = 'none'; };
 
         onValue(ref(db, 'global_broadcast'), (s) => {
             const d = s.val();
             if (d && d.expiry > Date.now()) {
-                document.getElementById('broadcast-user').innerText = `${d.name} SENDS A PRIORITY ALERT`;
+                document.getElementById('broadcast-user').innerText = d.name;
                 document.getElementById('broadcast-msg').innerText = d.text;
                 document.getElementById('broadcast-screen').style.display = 'flex';
                 setTimeout(() => document.getElementById('broadcast-screen').style.display = 'none', 7000);
             }
         });
 
+        // --- Messaging ---
         window.sendMessage = async (type) => {
-            if ((Date.now() - lastSentTime) / 1000 < 1.5) return;
+            if ((Date.now() - lastSentTime) / 1000 < 3) return;
             const input = document.getElementById('chat-input'), text = input.value.trim();
             if(!text) return;
             const cost = type === 'broadcast' ? 500 : (type === 'big' ? 100 : 0);
-            if(cost > currentCoins) return alert("Insufficient Credits");
+            if(cost > currentCoins) return alert("No coins!");
             
             lastSentTime = Date.now();
             runTransaction(ref(db, `users/${auth.currentUser.uid}/coins`), (v) => type === 'normal' ? (v || 0) + 10 : (v || 0) - cost);
@@ -262,7 +175,7 @@
             input.value = "";
         };
 
-        window.deleteMsg = (id) => { if(confirm("Erase data point?")) remove(ref(db, `chat_messages/${id}`)); };
+        window.deleteMsg = (id) => { if(confirm("Delete?")) remove(ref(db, `chat_messages/${id}`)); };
 
         onChildAdded(ref(db, 'chat_messages'), async (snap) => {
             const d = snap.val(), id = snap.key, isMine = d.uid === auth.currentUser?.uid;
@@ -281,7 +194,6 @@
         });
 
         document.getElementById('send-btn').onclick = () => window.sendMessage('normal');
-        document.getElementById('chat-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') window.sendMessage('normal'); });
     </script>
 </body>
 </html>
